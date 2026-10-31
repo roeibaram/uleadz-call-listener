@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Uleadz Call Listener</title>
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">STAGE ONE</p>
+        <h1>Call Listener</h1>
+        <p class="subheading">Near-live transcript · local session log</p>
+      </header>
+
+      <section class="notice" aria-label="Audio and privacy notice">
+        <strong>Before listening</strong>
+        <p>Only start when you have permission to process this call. The extension captures both audio playing in the selected tab and your microphone. Chrome will ask for microphone permission. Both audio sources are sent to Groq for transcription; transcripts stay in this browser profile, and nothing is added to Uleadz.</p>
+      </section>
+
+      <details class="settings">
+        <summary>Connection settings</summary>
+        <label for="bridge-token">Local bridge token</label>
+        <input id="bridge-token" type="password" autocomplete="off" spellcheck="false">
+        <button id="save-token" class="secondary" type="button">Save token</button>
+        <p id="token-fingerprint" class="help">Token fingerprint: not set</p>
+        <p class="help">Extension ID for bridge setup: <code id="extension-id"></code></p>
+      </details>
+
+      <section class="controls" aria-label="Listening controls">
+        <div class="status-row">
+          <span id="status-dot" class="status-dot" aria-hidden="true"></span>
+          <span id="status" role="status" aria-live="polite">Ready</span>
+        </div>
+        <button id="start" type="button">Start listening</button>
+        <button id="stop" class="stop" type="button" disabled>Stop listening</button>
+        <p class="help">Before starting, switch to the phone tab you want to capture and click the Uleadz Call Listener toolbar icon in that tab. Tab capture is limited to the Uleadz phone page and the local test page.</p>
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="transcript-section">
+        <div class="section-heading">
+          <div>
+            <h2>Current call</h2>
+            <p id="call-time" class="help">No active session</p>
+          </div>
+          <button id="copy" class="text-button" type="button" disabled>Copy</button>
+        </div>
+        <pre id="transcript" class="transcript" aria-live="polite">Transcript will appear here as the customer speaks.</pre>
+      </section>
+
+      <section class="history-section">
+        <div class="section-heading">
+          <h2>Recent sessions</h2>
+          <button id="clear-history" class="text-button danger-text" type="button">Clear history</button>
+        </div>
+        <div id="history" class="history"></div>
+      </section>
+
+      <footer>Listening is manual. No calls are initiated, and no jobs are created or submitted.</footer>
+    </main>
+    <script src="sidepanel.js"></script>
+  </body>
+</html>

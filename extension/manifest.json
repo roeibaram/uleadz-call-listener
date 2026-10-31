@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Uleadz Call Listener",
+  "version": "0.1.0",
+  "description": "Transcribe an active Uleadz phone tab into a local extension log.",
+  "minimum_chrome_version": "116",
+  "permissions": ["sidePanel", "tabCapture", "storage", "activeTab"],
+  "host_permissions": ["http://127.0.0.1:4317/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' ws://127.0.0.1:4317"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Open Uleadz Call Listener"
+  }
+}
