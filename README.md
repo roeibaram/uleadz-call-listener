@@ -12,6 +12,7 @@ The prototype demonstrates browser tab capture, audio processing, an authenticat
 - Audio is streamed to a loopback-only Node.js helper, grouped into short speech segments, and transcribed with Groq Whisper.
 - A random bridge token and extension-origin validation protect the local WebSocket connection.
 - Transcripts are stored in `chrome.storage.local` in the current browser profile, with a 20-session history limit and a clear-history action.
+- Download an individual completed transcript as a plain-text file when needed.
 - A synthetic local audio page provides a no-call smoke test.
 - The helper does not save audio or transcripts and the extension does not submit data to Uleadz.
 
@@ -32,6 +33,7 @@ The bridge converts PCM segments to WAV for the transcription API. The transcrip
 - The extension captures both the selected tab and the microphone. Chrome asks for microphone access; microphone audio is mixed with tab audio and sent to Groq along with each speech segment.
 - Review Groq's current privacy, retention, pricing, and rate-limit terms before use. Audio leaves the device for transcription. The bridge does not persist audio or transcript data.
 - Transcripts remain in this Chrome profile until cleared, and at most 20 sessions are retained.
+- Transcript downloads are created only after the user selects **Download transcript**; downloaded files are outside the extension's local-history controls.
 - Transcription is near-live, not word-by-word streaming. Accuracy is not guaranteed; verify transcripts before relying on them.
 - This is a local prototype without user accounts, speaker diarization, job-field extraction, or Uleadz write-back.
 

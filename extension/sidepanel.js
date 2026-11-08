@@ -18,6 +18,7 @@ const elements = {
   transcript: document.querySelector("#transcript"),
   copy: document.querySelector("#copy"),
   history: document.querySelector("#history"),
+  historyStatus: document.querySelector("#history-status"),
   clearHistory: document.querySelector("#clear-history"),
 };
 
@@ -72,6 +73,29 @@ function formatTime(dateString) {
   return new Date(dateString).toLocaleString();
 }
 
+function downloadTranscript(call) {
+  const startedAt = new Date(call.startedAt);
+  const timestamp = Number.isNaN(startedAt.getTime())
+    ? "unknown-date"
+    : startedAt.toISOString().replaceAll(/[:.]/g, "-");
+  const content = `Uleadz Call Listener transcript\nStarted: ${formatTime(call.startedAt)}\n\n${call.transcript}\n`;
+  const file = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `uleadz-call-transcript-${timestamp}.txt`;
+  link.hidden = true;
+
+  try {
+    document.body.append(link);
+    link.click();
+  } finally {
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+}
+
 function renderHistory() {
   elements.history.replaceChildren();
   const previous = calls.filter((call) => call.id !== currentCall?.id);
@@ -92,6 +116,27 @@ function renderHistory() {
     const transcript = document.createElement("p");
     transcript.textContent = call.transcript || "No transcript was captured.";
     details.append(summary, transcript);
+
+    if (call.transcript) {
+      const actions = document.createElement("div");
+      actions.className = "history-item__actions";
+      const download = document.createElement("button");
+      download.className = "text-button";
+      download.type = "button";
+      download.textContent = "Download transcript";
+      download.setAttribute("aria-label", `Download transcript from ${formatTime(call.startedAt)}`);
+      download.addEventListener("click", () => {
+        try {
+          downloadTranscript(call);
+          elements.historyStatus.textContent = "Transcript downloaded.";
+        } catch {
+          elements.historyStatus.textContent = "Could not download this transcript.";
+        }
+      });
+      actions.append(download);
+      details.append(actions);
+    }
+
     elements.history.append(details);
   }
 }
@@ -511,6 +556,7 @@ elements.clearHistory.addEventListener("click", async () => {
   clearTimeout(persistenceTimer);
   calls = [];
   await chrome.storage.local.remove("calls");
+  elements.historyStatus.textContent = "";
   renderCurrentCall();
   renderHistory();
 });

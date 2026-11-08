@@ -218,6 +218,12 @@ button:disabled {
   font-size: 12px;
 }
 
+.history-item__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
 footer {
   color: #5c6b7b;
   font-size: 11px;
