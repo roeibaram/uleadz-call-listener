@@ -540,11 +540,16 @@ elements.stop.addEventListener("click", stopListening);
 
 elements.copy.addEventListener("click", async () => {
   if (currentCall?.transcript) {
-    await navigator.clipboard.writeText(currentCall.transcript);
-    elements.copy.textContent = "Copied";
-    setTimeout(() => {
-      elements.copy.textContent = "Copy";
-    }, 1200);
+    try {
+      await navigator.clipboard.writeText(currentCall.transcript);
+      clearError();
+      elements.copy.textContent = "Copied";
+      setTimeout(() => {
+        elements.copy.textContent = "Copy";
+      }, 1200);
+    } catch {
+      showError("Could not access the clipboard. Select the transcript and copy it manually.");
+    }
   }
 });
 
