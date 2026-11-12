@@ -490,6 +490,10 @@ async function startListening() {
       }
     });
   } catch (error) {
+    if (currentCall) {
+      calls = calls.filter((call) => call.id !== currentCall.id);
+      persistCalls();
+    }
     finishUi("Ready");
     showError(
       error instanceof Error
