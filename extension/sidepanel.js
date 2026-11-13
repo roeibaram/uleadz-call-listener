@@ -563,8 +563,15 @@ elements.clearHistory.addEventListener("click", async () => {
     return;
   }
   clearTimeout(persistenceTimer);
+  try {
+    await chrome.storage.local.remove("calls");
+  } catch {
+    persistCalls();
+    showError("Could not clear call history from this browser. Try again.");
+    return;
+  }
   calls = [];
-  await chrome.storage.local.remove("calls");
+  clearError();
   elements.historyStatus.textContent = "";
   renderCurrentCall();
   renderHistory();
