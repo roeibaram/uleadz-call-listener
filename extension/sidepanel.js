@@ -530,7 +530,13 @@ elements.saveToken.addEventListener("click", async () => {
     showError("Use an alphanumeric bridge token with at least 32 characters.");
     return;
   }
-  await chrome.storage.local.set({ bridgeToken: token });
+  try {
+    await chrome.storage.local.set({ bridgeToken: token });
+  } catch {
+    showError("Could not save the bridge token in this browser. Try again.");
+    return;
+  }
+  savedBridgeToken = token;
   await updateTokenFingerprint(token);
   clearError();
   elements.saveToken.textContent = "Saved";
