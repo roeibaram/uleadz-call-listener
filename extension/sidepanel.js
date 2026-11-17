@@ -156,8 +156,12 @@ function renderCurrentCall() {
 
 function persistCalls() {
   clearTimeout(persistenceTimer);
-  persistenceTimer = setTimeout(() => {
-    chrome.storage.local.set({ calls: calls.slice(0, MAX_CALLS) });
+  persistenceTimer = setTimeout(async () => {
+    try {
+      await chrome.storage.local.set({ calls: calls.slice(0, MAX_CALLS) });
+    } catch {
+      showError("Could not save call history in this browser.");
+    }
   }, 250);
 }
 
