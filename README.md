@@ -1,49 +1,39 @@
 # Uleadz Call Listener
 
-Uleadz Call Listener is a portfolio prototype built from a Chrome Manifest V3 extension and a local Node.js bridge. It captures audio from a manually selected Uleadz phone tab and the user's microphone, sends short mixed-audio segments to Groq Whisper, and keeps a bounded transcript history in the current Chrome profile.
+I built Uleadz Call Listener as a local prototype. It's a Chrome extension and a small Node.js helper. When you select a supported phone tab, it captures that tab and your microphone, sends short audio clips to Groq for transcription, and saves recent transcripts in Chrome.
 
-The prototype demonstrates browser tab capture, audio processing, an authenticated local WebSocket bridge, third-party speech-to-text integration, and explicit consent and data-handling boundaries. It does not write to Uleadz, create or submit jobs, or initiate calls.
+It does not place calls, create jobs, or write anything back to Uleadz.
 
 > **Independent prototype:** This project is not an official Uleadz product. Use only with permission and informed consent from everyone whose audio may be processed.
 
 ## Features
 
-- Chrome toolbar action explicitly selects the tab to capture; access is limited to the supported phone pages and local test page.
-- Audio is streamed to a loopback-only Node.js helper, grouped into short speech segments, and transcribed with Groq Whisper.
-- A random bridge token and extension-origin validation protect the local WebSocket connection.
-- Transcripts are stored in `chrome.storage.local` in the current browser profile, with a 20-session history limit and a clear-history action.
+- Click the extension in the toolbar to choose which supported phone tab to capture.
+- Audio is sent to a helper running on your computer, then transcribed by Groq.
+- The extension and helper use a token to check that they're allowed to connect.
+- Transcripts are saved in this Chrome profile. The extension keeps up to 20 sessions and lets you clear them.
 - Download an individual completed transcript as a `.txt` plain-text file.
 - A synthetic local audio page provides a no-call smoke test.
-- The helper does not save audio or transcripts and the extension does not submit data to Uleadz.
 
 ## Architecture
 
 ```text
 Chrome side panel
-  ├─ selected phone-tab audio + microphone
-  ├─ Web Audio worklet encodes PCM and groups speech segments
-  └─ authenticated WebSocket ──> local Node.js bridge (127.0.0.1:4317)
-                                    └─ HTTPS transcription request ──> Groq Whisper
+  ├─ captures the selected phone tab and your microphone
+  └─ sends short audio clips to a helper running on your computer
+       └─ the helper sends them to Groq for transcription
 ```
 
-The bridge converts PCM segments to WAV for the transcription API. The transcript combines both audio sources without speaker labels, so it may be difficult to tell who said what.
+The transcript combines both audio sources, so it may be hard to tell who said what.
 
 ## Privacy and limitations
 
-- The extension captures both the selected tab and the microphone. Chrome asks for microphone access; microphone audio is mixed with tab audio and sent to Groq along with each speech segment.
-- Review Groq's current privacy, retention, pricing, and rate-limit terms before use. Audio leaves the device for transcription. The bridge does not persist audio or transcript data.
-- Transcripts remain in this Chrome profile until cleared, and at most 20 sessions are retained.
-- Transcript downloads are created only after the user selects **Download transcript**; downloaded files are outside the extension's local-history controls.
-- Transcription is near-live, not word-by-word streaming. Accuracy is not guaranteed; verify transcripts before relying on them.
-- This is a local prototype without user accounts, speaker diarization, job-field extraction, or Uleadz write-back.
-
-## What goes where
-
-- While listening is active, audio from the selected tab and your microphone is mixed, streamed to the local Node helper, and uploaded in short WAV segments to Groq's transcription API.
-- The helper does not save audio or transcripts. Transcripts are saved in `chrome.storage.local` in this Chrome profile.
-- Clear the local history from the extension at any time.
-
-Use this only where you have permission and consent to process call audio. Audio segments are sent to Groq; review Groq's current privacy, retention, pricing, and rate-limit terms before use. Free-tier limits can change and are subject to your account.
+- The extension captures both the selected tab and your microphone. Chrome will ask for microphone permission. Both audio sources are sent to Groq in short clips.
+- Audio leaves your computer for transcription. The helper does not save audio or transcripts, but transcripts stay in Chrome until you clear them. Up to 20 sessions are kept.
+- Check Groq's current privacy, pricing, and usage limits before using the service.
+- Clearing the extension's history does not remove transcript files you've downloaded.
+- Transcripts appear after short pauses, not as you speak. Check them for mistakes before using them.
+- There are no user accounts or speaker labels, and the app won't fill in job details for you.
 
 ## Requirements
 
